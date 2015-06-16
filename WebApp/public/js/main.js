@@ -9,9 +9,12 @@ Array.prototype.remove = function() {
   return this;
 };
 
-var controllerURL = '';
+var CONTROLLER_URL = '';
 var MAX_SPEED = 200;
 var STEP = 25;
+var RATE_LIMIT_IN_SEC = 0.5;
+
+
 var controls = {};
 
 var lastSent;
@@ -21,7 +24,7 @@ function canSend(){
 	if(!lastSent){
 		canSend = true;
 		lastSent = new Date();
-	}else if(moment().isAfter(moment(lastSent).add(0.5, 's'))){
+	}else if(moment().isAfter(moment(lastSent).add(RATE_LIMIT_IN_SEC, 's'))){
 		canSend = true;
 		lastSent = new Date();
 	}
@@ -47,9 +50,10 @@ function sendCommand(command, isOn){
 		}
 		$.ajax({
 		  type: "POST",
-		  url: controllerURL + "/" + $('#robotName').val() + "/" + command + controls[command]
+		  url: CONTROLLER_URL + "/" + $('#robotName').val() + "/" + command + controls[command]
 		});
 	}
+	var RATE_LIMIT_IN_SEC = 0.5;
 }
 
 $(document).ready(function() {
