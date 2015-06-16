@@ -70,11 +70,7 @@ Leap.loop(controllerOptions, function(frame) {
   var handOutput = document.getElementById("handData");
   var handString = "";
 
-  var movementDiff;
-  var movementInit;
-  var movementNext;
-  var motionCount = 0;
-
+  var movement;
 
   if (frame.hands.length > 0) {
     for (var i = 0; i < frame.hands.length; i++) {
@@ -92,29 +88,50 @@ Leap.loop(controllerOptions, function(frame) {
       handString += "Arm center: " + vectorToString(hand.arm.center()) + "<br />";
       handString += "Arm up vector: " + vectorToString(hand.arm.basis[1]) + "<br />";
 
-      if(motionCount == 0){
-        motionCount++;
-        movementInit = hand.arm.direction()[0];
+
+      if(hand.grabStrength == 1){
+          console.log("Grab Strength: " + hand.grabStrength)
+          console.log("Hand Moving Back: " + hand.arm.direction()[0]);
       }
-      else if(motionCount == 1){
-        movementNext = hand.arm.direction()[0];
-        movementDiff = movementNext - movementInit;
-        motionCount = 0;
+      else{
+        if(hand.arm.direction()[0] <= -0.40){
+          console.log("Grab Strength: " + hand.grabStrength)
+          console.log("Hand moving Left: " + hand.arm.direction()[0]);
+        }
+        else if(hand.arm.direction()[0] > 0.00){
+          console.log("Grab Strength: " + hand.grabStrength)
+          console.log("Hand Moving Right: " + hand.arm.direction()[0]); 
+        }
+        else if(hand.arm.direction()[0] > -0.40 && hand.arm.direction()[0] < 0.00){
+          console.log("Grab Strength: " + hand.grabStrength)
+          console.log("Hand Moving Forward: " + hand.arm.direction()[0]);
+        }
       }
 
 
-      -0.80, 0.10
 
-      //if(!hand.arm.direction()[0] > -0.2 && !hand.arm.direction()[0] < 0.2){
-     //   if(movementDiff > 0.5){
-  	      if(hand.arm.direction()[0] <= -0.30){
-    		  	console.log("Hand moving Left: " + hand.arm.direction()[0]);
-    		  }
-    		  else{
-    		  	console.log("Hand Moving Right: " + hand.arm.direction()[0]);	
-    		  }
-       // }
-	   // }
+
+
+
+
+
+
+
+//       if(hand.arm.direction()[2] <= 30 && hand.arm.direction()[0] <= -0.30){
+//         console.log("Hand Moving Forward: " + hand.arm.direction()[0]);
+//       }
+//       else if(hand.arm.direction()[2] > 30){
+//         console.log("Hand Moving Back: " + hand.arm.direction()[0]);
+//       }
+
+// //        if(!hand.arm.direction()[0] > -0.40 && !hand.arm.direction()[0] < -0.00){
+//       if(hand.arm.direction()[0] <= -0.30){
+// 		  	console.log("Hand moving Left: " + hand.arm.direction()[0]);
+// 		  }
+// 		  else{
+// 		  	console.log("Hand Moving Right: " + hand.arm.direction()[0]);	
+// 		  }
+//   //      }      
 
       // Hand motion factors
       if (previousFrame && previousFrame.valid) {
@@ -270,6 +287,21 @@ function pauseForGestures() {
   } else {
     pauseOnGesture = false;
   }
+}
+
+
+//Collision detection function
+function check_collision(player_xPos, player_yPos){
+    if (ball.y_pos + 40 < player_yPos)
+        return(false);
+    if (ball.y_pos > player_yPos + 90)
+        return(false);
+    if (ball.x_pos + 40 < player_xPos)
+        return(false);
+    if (ball.x_pos > player_xPos + 80)
+        return(false);
+
+    return true;
 }
 
 </script>
