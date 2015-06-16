@@ -9,66 +9,84 @@ Array.prototype.remove = function() {
   return this;
 };
 
-var controllerURL = '';
+var CONTROLLER_URL = '';
 var MAX_SPEED = 200;
+var STEP = 25;
+var RATE_LIMIT_IN_SEC = 0.5;
+
+
 var controls = {};
 
-function sendCommand(command, isOn){
-	if(!controls[command]) controls[command] = 0;
-	if(isOn){
-		if(controls[command] <= (MAX_SPEED - 10)){
-			controls[command] += 10;
-		}
-	}else{
-		if(controls[command] >= 10){
-			controls[command] -= 10;
-		}
-	}
+var lastSent;
 
-	$.ajax({
-	  type: "POST",
-	  url: controllerURL,
-	  data: {
-	  	command: command,
-	  	speed: controls[command],
-	  	robot: $('#robotName').val()
-	  },
-	  success: function(){
-	  	console.log("Sent");
-	  }
-	});
+function canSend(){
+	var canSend = false;
+	if(!lastSent){
+		canSend = true;
+		lastSent = new Date();
+	}else if(moment().isAfter(moment(lastSent).add(RATE_LIMIT_IN_SEC, 's'))){
+		canSend = true;
+		lastSent = new Date();
+	}
+	return canSend;
+}
+
+function sendCommand(command, isOn){
+	if(!$('#robotName').val().length){
+		$('#robotName').parent().addClass('has-error');
+		return;
+	}
+	$('#robotName').parent().removeClass('has-error');
+	if(canSend()){
+		if(!controls[command]) controls[command] = 0;
+		if(isOn){
+			if(controls[command] <= (MAX_SPEED - STEP)){
+				controls[command] += STEP;
+			}
+		}else{
+			if(controls[command] >= (-MAX_SPEED + STEP)){
+				controls[command] -= STEP;
+			}
+		}
+		$.ajax({
+		  type: "POST",
+		  url: CONTROLLER_URL + "/" + $('#robotName').val() + "/" + command + controls[command]
+		});
+	}
+	var RATE_LIMIT_IN_SEC = 0.5;
 }
 
 $(document).ready(function() {
 	$('a.lead').removeClass('text-danger').addClass('text-success').find('span').text('Online');
 	$('a.lead i.fa').removeClass('fa-times').addClass('fa-check');
 
+	$('#robotName').on('change', function(){
+		if($('#robotName').val().length){
+			$('#robotName').parent().removeClass('has-error');
+		}
+	});
+
+
 	$(document).on('battlebot:forward', function(event){
-		console.log('battlebot:forward')
-		sendCommand('forward', false);
+		sendCommand('M', true);
 	});
 	$(document).on('battlebot:reverse', function(event){
-		console.log('battlebot:reverse')
-		sendCommand('reverse', false);
+		sendCommand('M', false);
 	});
 
 
 	$(document).on('battlebot:left', function(event){
-		console.log('battlebot:left')
-		sendCommand('direction', false);
+		sendCommand('T', false);
 	});
 	$(document).on('battlebot:right', function(event){
-		console.log('battlebot:right')
-		sendCommand('direction', true);
+		sendCommand('T', true);
 	});
 
 	$(document).on('battlebot:stop', function(event){
-		console.log('battlebot:stop')
-		sendCommand('stop', true);
+		sendCommand('S', true);
 	});
 
 	$(document).on('battlebot:lights', function(event){
-		console.log('battlebot:lights')
 		if(event.prefix){
 			sendCommand('lights', false);
 		}else{
@@ -98,22 +116,27 @@ $(document).ready(function() {
   			$('#btnRight').addClass('focus');
   			$.event.trigger({type:'battlebot:right'});
   			break;
-			case 40:
-			case 83:
+		case 40:
+		case 83:
   			//back
   			$('#btnReverse').addClass('focus');
   			$.event.trigger({type:'battlebot:reverse'});
   			break;
-			default:
-				break;
+		case 32:
+  			//stop
+  			$('#btnStop').addClass('focus');
+  			$.event.trigger({type:'battlebot:stop'});
+  			break;
+		default:
+			break;
   	}
 	});
 
 	$(document).keyup(function(event){
 		switch(event.which){
-				case 38:
-				case 87:
-	  			//forward
+			case 38:
+			case 87:
+				//forward
 	  			$('#btnForward').removeClass('focus');
 	  			$.event.trigger({type:'battlebot:forward', prefix:'-'});
 	  			break;
@@ -129,14 +152,19 @@ $(document).ready(function() {
 	  			$('#btnRight').removeClass('focus');
 	  			$.event.trigger({type:'battlebot:right', prefix:'-'});
 	  			break;
-				case 40:
-				case 83:
+			case 40:
+			case 83:
 	  			//back
 	  			$('#btnReverse').removeClass('focus');
 	  			$.event.trigger({type:'battlebot:reverse', prefix:'-'});
 	  			break;
-				default:
-					break;
+			case 32:
+	  			//stop
+	  			$('#btnStop').removeClass('focus');
+	  			$.event.trigger({type:'battlebot:stop', prefix:'-'});
+	  			break;
+			default:
+				break;
 	  	}
 	});
 });
