@@ -1,13 +1,16 @@
 #include <Servo.h>
 
+// Comment out for quickness.
 #define SERIAL_DEBUG
 
+// Centre point of the servo.
 #define SERVO_CENTRE 1500
 
+// Must be these pins for use of the timer, da ze.
 #define LEFT_SERVO_PIN 9
 #define RIGHT_SERVO_PIN 10
 
-
+// Servo objects.
 Servo g_servoLeft;
 Servo g_servoRight;
 
@@ -18,6 +21,7 @@ void setup()
   Serial.begin(9600);
 #endif
 
+  // Setup the servos.
   g_servoLeft.attach(LEFT_SERVO_PIN);
   g_servoRight.attach(RIGHT_SERVO_PIN);
 }
@@ -47,6 +51,7 @@ void loop()
  */
 bool processMotion(int16_t linearVel, int16_t angularVel)
 {
+  // NOOOOOOOOOOOOO!!!!!! ze.
   if(linearVel != 0 && angularVel != 0)
     return false;
 
