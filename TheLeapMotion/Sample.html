@@ -69,10 +69,16 @@ Leap.loop(controllerOptions, function(frame) {
   // Display Hand object data
   var handOutput = document.getElementById("handData");
   var handString = "";
+
+  var movementDiff;
+  var movementInit;
+  var movementNext;
+  var motionCount = 0;
+
+
   if (frame.hands.length > 0) {
     for (var i = 0; i < frame.hands.length; i++) {
       var hand = frame.hands[i];
-
 
       handString += "<div style='width:300px; float:left; padding:5px'>";
       handString += "Hand ID: " + hand.id + "<br />";
@@ -86,14 +92,29 @@ Leap.loop(controllerOptions, function(frame) {
       handString += "Arm center: " + vectorToString(hand.arm.center()) + "<br />";
       handString += "Arm up vector: " + vectorToString(hand.arm.basis[1]) + "<br />";
 
-      if(!hand.arm.direction()[0] > -0.2 && !hand.arm.direction()[0] < 0.2){
-	      if(hand.arm.direction()[0] <= 0){
-		  	console.log("Hand moving Left: " + hand.arm.direction()[0]);
-		  }
-		  else{
-		  	console.log("Hand Moving Right: " + hand.arm.direction()[0]);	
-		  }
-	  }
+      if(motionCount == 0){
+        motionCount++;
+        movementInit = hand.arm.direction()[0];
+      }
+      else if(motionCount == 1){
+        movementNext = hand.arm.direction()[0];
+        movementDiff = movementNext - movementInit;
+        motionCount = 0;
+      }
+
+
+      -0.80, 0.10
+
+      //if(!hand.arm.direction()[0] > -0.2 && !hand.arm.direction()[0] < 0.2){
+     //   if(movementDiff > 0.5){
+  	      if(hand.arm.direction()[0] <= -0.30){
+    		  	console.log("Hand moving Left: " + hand.arm.direction()[0]);
+    		  }
+    		  else{
+    		  	console.log("Hand Moving Right: " + hand.arm.direction()[0]);	
+    		  }
+       // }
+	   // }
 
       // Hand motion factors
       if (previousFrame && previousFrame.valid) {
