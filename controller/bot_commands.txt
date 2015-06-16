@@ -1,0 +1,25 @@
+RF API
+
+Format: {char,int_16}
+
+commands:
+
+M = move (speed)
+T = turn (amount)
+S = stop (unused)
+H = pull high (pin)
+L = pull low (pin)
+
+HTTP API
+
+get list of bots:
+GET /
+{'bots': ['alice','bob','eve']}
+
+send a command:
+POST /{bot no}/{command}
+POST /0/M150
+POST /1/T-150
+POST /2/S
+POST /0/H13
+POST /1/L4
