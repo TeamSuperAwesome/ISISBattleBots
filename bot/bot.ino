@@ -28,13 +28,15 @@ struct RFPacket
   int16_t value;
 };
 
-/* uint8_t g_RFAddress[] = "alice"; */
-uint64_t g_RFAddress = 0xDEADBEEF;
+// Uncomment for each robot
+/* uint64_t g_RFAddress = 0xA11CE; //Alice */
+/* uint64_t g_RFAddress = 0xB0B; //Bob */
+/* uint64_t g_RFAddress = 0xE11E; //Eve */
+
 
 void setup()
 {
 #ifdef SERIAL_DEBUG
-  while(!Serial) {}
   printf_begin();
   Serial.begin(9600);
 #endif
