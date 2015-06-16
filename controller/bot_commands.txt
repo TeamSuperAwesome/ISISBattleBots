@@ -4,6 +4,9 @@ Format: {char,int_16}
 
 commands:
 
+positive is forwards for move, right for turn.
+negative is backwards for move, left for turn.
+
 M = move (speed)
 T = turn (amount)
 S = stop (unused)
