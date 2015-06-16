@@ -37,6 +37,11 @@ void sendError(EthernetClient& client, const char* reply) {
   client.println(reply);
 }
 
+struct command_t {
+  char command;
+  int16_t value;
+};
+
 void handleCommand(EthernetClient& client, const char* command) {
   Serial.println(command);
 
@@ -64,14 +69,16 @@ void handleCommand(EthernetClient& client, const char* command) {
     return;
   }
 
-  struct {char command; int value;} command_s;
-  command_s.command = *cmd;
-  command_s.value = atoi(cmd+1);
-  //radio.openWritingPipe((byte[6])name);
-  //radio.write(command_s);
+
+  /* struct {char command; int value;} command_s; */
+  struct command_t c;
+  c.command = *cmd;
+  c.value = atoi(cmd+1);
+  radio.openWritingPipe((uint8_t*)name);
+  radio.write(&c, sizeof(command_t));
   char buf[128];
   memset(buf, 0, 128);
-  snprintf(buf, 127, "command: %c%d", command_s.command, command_s.value);
+  snprintf(buf, 127, "command: %c%d", c.command, c.value);
   Serial.print("bot: ");
   Serial.println(name);
   Serial.println(buf);
