@@ -4,6 +4,9 @@ Format: {char,int_16}
 
 commands:
 
+positive is forwards for move, right for turn.
+negative is backwards for move, left for turn.
+
 M = move (speed)
 T = turn (amount)
 S = stop (unused)
@@ -12,14 +15,10 @@ L = pull low (pin)
 
 HTTP API
 
-get list of bots:
-GET /
-{'bots': ['alice','bob','eve']}
-
 send a command:
-POST /{bot no}/{command}
-POST /0/M150
-POST /1/T-150
-POST /2/S
-POST /0/H13
-POST /1/L4
+POST /{bot name}/{command}
+POST /alice/M150
+POST /bob/T-150
+POST /eve/S
+POST /alice/H13
+POST /bob/L4
