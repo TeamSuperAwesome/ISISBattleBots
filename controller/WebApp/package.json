@@ -1,0 +1,36 @@
+{
+  "name": "ISISBattleBots",
+  "version": "3.0.2",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TeamSuperAwesome/ISISBattleBots"
+  },
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "async": "^1.2.1",
+    "bcrypt-nodejs": "^0.0.3",
+    "body-parser": "^1.12.4",
+    "clockwork": "^0.1.0",
+    "compression": "^1.5.0",
+    "connect-assets": "^4.7.1",
+    "connect-mongo": "^0.8.1",
+    "cookie-parser": "^1.3.5",
+    "csso": "^1.3.11",
+    "errorhandler": "^1.4.0",
+    "express": "^4.12.4",
+    "express-flash": "^0.0.2",
+    "express-session": "^1.11.3",
+    "express-validator": "^2.11.0",
+    "jade": "^1.11.0",
+    "less": "^2.5.1",
+    "method-override": "^2.3.3",
+    "request": "^2.57.0",
+    "serve-favicon": "^2.3.0",
+    "stripe": "^3.5.0",
+    "uglify-js": "^2.4.23",
+    "validator": "^3.40.1"
+  },
+  "license": "MIT"
+}

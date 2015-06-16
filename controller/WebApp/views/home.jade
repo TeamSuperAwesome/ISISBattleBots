@@ -1,0 +1,27 @@
+extends layout
+
+block content
+
+  .row
+    .col-xs-4.col-xs-offset-4
+      select#robotName.col-xs-12.form-control
+        option
+        option Bob
+        option Eve
+        option Alice
+
+  br
+
+  .row
+    button#btnForward.col-xs-4.col-xs-offset-4.btn.btn-success(onclick="$.event.trigger({type:'battlebot:forward'});")
+      i.fa.fa-caret-up
+  .row
+    button#btnLeft.col-xs-4.btn.btn-success(onclick="$.event.trigger({type:'battlebot:left'});")
+      i.fa.fa-caret-left
+    button#btnStop.col-xs-4.btn.btn-danger(onclick="$.event.trigger({type:'battlebot:stop'});")
+      i.fa.fa-stop
+    button#btnRight.col-xs-4.btn.btn-success(onclick="$.event.trigger({type:'battlebot:right'});")
+      i.fa.fa-caret-right
+  .row
+    button#btnReverse.col-xs-4.col-xs-offset-4.btn.btn-success(onclick="$.event.trigger({type:'battlebot:reverse'});")
+      i.fa.fa-caret-down
