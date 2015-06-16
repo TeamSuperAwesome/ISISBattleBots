@@ -75,7 +75,7 @@ void handleCommand(EthernetClient& client, const char* command) {
   c.command = *cmd;
   c.value = atoi(cmd+1);
   radio.openWritingPipe((uint8_t*)name);
-  radio.write(&c, sizeof(command_t));
+  radio.write(&c, sizeof(command_t), 1);
   char buf[128];
   memset(buf, 0, 128);
   snprintf(buf, 127, "command: %c%d", c.command, c.value);
