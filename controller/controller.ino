@@ -66,7 +66,7 @@ uint64_t nameToPipe(const char* name) {
 
 void handleCommand(EthernetClient& client, const char* command) {
 
-  if(strncmp(command, "OPTIONS /", 9) != 0) {
+  if(strncmp(command, "OPTIONS /", 9) == 0) {
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: text/html");
     client.println("Access-Control-Allow-Origin: *");
