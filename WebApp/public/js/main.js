@@ -9,93 +9,83 @@ Array.prototype.remove = function() {
   return this;
 };
 
-var CONTROLLER_URL = '';
-var MAX_SPEED = 200;
-var STEP = 25;
-var RATE_LIMIT_IN_SEC = 0.5;
-
-
-var controls = {};
-
-var lastSent;
-
-function canSend(){
-	var canSend = false;
-	if(!lastSent){
-		canSend = true;
-		lastSent = new Date();
-	}else if(moment().isAfter(moment(lastSent).add(RATE_LIMIT_IN_SEC, 's'))){
-		canSend = true;
-		lastSent = new Date();
-	}
-	return canSend;
-}
-
-function sendCommand(command, isOn){
-	if(!$('#robotName').val().length){
-		$('#robotName').parent().addClass('has-error');
-		return;
-	}
-	$('#robotName').parent().removeClass('has-error');
-	if(canSend()){
-		if(!controls[command]) controls[command] = 0;
-		if(isOn){
-			if(controls[command] <= (MAX_SPEED - STEP)){
-				controls[command] += STEP;
-			}
-		}else{
-			if(controls[command] >= (-MAX_SPEED + STEP)){
-				controls[command] -= STEP;
-			}
-		}
-		$.ajax({
-		  type: "POST",
-		  url: CONTROLLER_URL + "/" + $('#robotName').val() + "/" + command + controls[command]
-		});
-	}
+(function(){
+	var CONTROLLER_URL = 'http://192.168.1.100';
+	var MAX_SPEED = 200;
+	var STEP = 25;
 	var RATE_LIMIT_IN_SEC = 0.5;
-}
 
-$(document).ready(function() {
-	$('a.lead').removeClass('text-danger').addClass('text-success').find('span').text('Online');
-	$('a.lead i.fa').removeClass('fa-times').addClass('fa-check');
+	var controls = {};
+	var lastSent;
 
+	function canSend(){
+		var canSend = false;
+		if(!lastSent){
+			canSend = true;
+			lastSent = new Date();
+		}else if(moment().isAfter(moment(lastSent).add(RATE_LIMIT_IN_SEC, 's'))){
+			canSend = true;
+			lastSent = new Date();
+		}
+		return canSend;
+	}
+
+	function sendCommand(command, isOn){
+		if(!$('#robotName').val().length){
+			$('#robotName').parent().addClass('has-error');
+			return;
+		}
+		$('#robotName').parent().removeClass('has-error');
+		if(canSend()){
+			if(!controls[command]) controls[command] = 0;
+			if(isOn){
+				if(controls[command] < 0){
+					controls[command] = 0;
+				}
+				if(controls[command] <= (MAX_SPEED - STEP)){
+					controls[command] += STEP;
+				}
+			}else{
+				if(controls[command] > 0){
+					controls[command] = 0;
+				}
+				if(controls[command] >= (-MAX_SPEED + STEP)){
+					controls[command] -= STEP;
+				}
+			}
+			$.ajax({
+			  type: "POST",
+			  url: CONTROLLER_URL + "/" + $('#robotName').val().toLowerCase() + "/" + command + controls[command]
+			});
+		}
+		var RATE_LIMIT_IN_SEC = 0.5;
+	}
+
+	// Clear any error state
 	$('#robotName').on('change', function(){
 		if($('#robotName').val().length){
 			$('#robotName').parent().removeClass('has-error');
 		}
 	});
 
-
+	// Events
 	$(document).on('battlebot:forward', function(event){
 		sendCommand('M', true);
 	});
 	$(document).on('battlebot:reverse', function(event){
 		sendCommand('M', false);
 	});
-
-
 	$(document).on('battlebot:left', function(event){
 		sendCommand('T', false);
 	});
 	$(document).on('battlebot:right', function(event){
 		sendCommand('T', true);
 	});
-
 	$(document).on('battlebot:stop', function(event){
 		sendCommand('S', true);
 	});
 
-	$(document).on('battlebot:lights', function(event){
-		if(event.prefix){
-			sendCommand('lights', false);
-		}else{
-			sendCommand('lights', true);
-		}
-	});
-
-	var keys = [];
-
+	// Keyboard listeners
   $(document).keydown(function(event) {
   	switch(event.which){
   		case 38:
@@ -131,40 +121,64 @@ $(document).ready(function() {
 			break;
   	}
 	});
-
 	$(document).keyup(function(event){
 		switch(event.which){
 			case 38:
 			case 87:
 				//forward
-	  			$('#btnForward').removeClass('focus');
-	  			$.event.trigger({type:'battlebot:forward', prefix:'-'});
-	  			break;
-	  		case 37:
-	  		case 65:
-	  			//left
-	  			$('#btnLeft').removeClass('focus');
-	  			$.event.trigger({type:'battlebot:left', prefix:'-'});
-	  			break;
-	  		case 39:
-	  		case 68:
-	  			//right
-	  			$('#btnRight').removeClass('focus');
-	  			$.event.trigger({type:'battlebot:right', prefix:'-'});
-	  			break;
+  			$('#btnForward').removeClass('focus');
+  			$.event.trigger({type:'battlebot:forward', prefix:'-'});
+  			break;
+  		case 37:
+  		case 65:
+  			//left
+  			$('#btnLeft').removeClass('focus');
+  			$.event.trigger({type:'battlebot:left', prefix:'-'});
+  			break;
+  		case 39:
+  		case 68:
+  			//right
+  			$('#btnRight').removeClass('focus');
+  			$.event.trigger({type:'battlebot:right', prefix:'-'});
+  			break;
 			case 40:
 			case 83:
-	  			//back
-	  			$('#btnReverse').removeClass('focus');
-	  			$.event.trigger({type:'battlebot:reverse', prefix:'-'});
-	  			break;
+  			//back
+  			$('#btnReverse').removeClass('focus');
+  			$.event.trigger({type:'battlebot:reverse', prefix:'-'});
+  			break;
 			case 32:
-	  			//stop
-	  			$('#btnStop').removeClass('focus');
-	  			$.event.trigger({type:'battlebot:stop', prefix:'-'});
-	  			break;
+  			//stop
+  			$('#btnStop').removeClass('focus');
+  			$.event.trigger({type:'battlebot:stop', prefix:'-'});
+  			break;
 			default:
 				break;
 	  	}
 	});
-});
+
+	// Use gyro as a control
+	window.ondevicemotion = function(event) {
+		var accelerationX, accelerationY;
+		if(window.innerHeight > window.innerWidth){
+			accelerationX = event.accelerationIncludingGravity.x;
+			accelerationY = event.accelerationIncludingGravity.y;
+		}else{
+			accelerationX = -event.accelerationIncludingGravity.y;
+			accelerationY = event.accelerationIncludingGravity.x;
+		}
+
+		if(accelerationY > 6){
+			$.event.trigger({type:'battlebot:reverse'});
+		}else if(accelerationY < 6){
+			$.event.trigger({type:'battlebot:forward'});
+		}
+		if(accelerationX > 1.5){
+			$.event.trigger({type:'battlebot:left'});
+		}else if(accelerationX < -1.5){
+			$.event.trigger({type:'battlebot:right'});
+		}
+	}
+
+
+}());

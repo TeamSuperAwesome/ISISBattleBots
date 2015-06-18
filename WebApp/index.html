@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="csrf-token">
+	<title>ISIS Battle Bots</title>
+	<link rel="stylesheet" href="public/css/main.css" />
+</head>
+<body>
+	<div class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div style="width:100%" class="navbar-header">
+				<a href="/" class="navbar-brand">
+					<i class="fa fa-cube"></i>ISIS Battle Bots</a>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12">
+					<select id="robotName" class="col-xs-12 form-control">
+						<option></option>
+						<option>Bob</option>
+						<option>Eve</option>
+						<option>Alice</option>
+					</select>
+				</div>
+			</div>
+			<br>
+			<div class="row">
+				<button id="btnForward" onclick="$.event.trigger({type:'battlebot:forward'});" class="col-xs-4 col-xs-offset-4 btn btn-success">
+					<i class="fa fa-caret-up"></i>
+				</button>
+			</div>
+			<div class="row">
+				<button id="btnLeft" onclick="$.event.trigger({type:'battlebot:left'});" class="col-xs-4 btn btn-success">
+					<i class="fa fa-caret-left"></i>
+				</button>
+				<button id="btnStop" onclick="$.event.trigger({type:'battlebot:stop'});" class="col-xs-4 btn btn-danger">
+					<i class="fa fa-stop"></i>
+				</button>
+				<button id="btnRight" onclick="$.event.trigger({type:'battlebot:right'});" class="col-xs-4 btn btn-success">
+					<i class="fa fa-caret-right"></i>
+				</button>
+			</div>
+			<div class="row">
+				<button id="btnReverse" onclick="$.event.trigger({type:'battlebot:reverse'});" class="col-xs-4 col-xs-offset-4 btn btn-success">
+					<i class="fa fa-caret-down"></i>
+				</button>
+			</div>
+		</div>
+		<script src="public/js/lib/jquery-2.1.3.min.js"></script>
+		<script src="public/js/lib/bootstrap.min.js"></script>
+		<script src="public/js/lib/moment.js"></script>
+		<script src="public/js/main.js"></script>
+	</body>
+	</html>

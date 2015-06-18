@@ -8590,12 +8590,13 @@ footer ul {
   margin-right: 6px;
 }
 button {
-  height: 200px;
+  height: 23vh;
   font-size: 5em !important;
 }
 #robotName {
-  font-size: 5em;
-  height: 1.5em;
+  font-size: 3em;
+  height: 1.3em;
+  text-align: center;
 }
 .has-error > #robotName {
   background: #b94a48;
