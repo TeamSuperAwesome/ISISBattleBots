@@ -3,22 +3,31 @@
 #include <RF24.h>
 #include <string.h>
 
+int serial_putc(char c, FILE*) {
+  Serial.write(c);
+  return c;
+}
+
 byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-IPAddress ip(192, 168, 1, 177);
+IPAddress ip(192, 168, 1, 100);
 EthernetServer server(80);
 
-RF24 radio(7,8);
+RF24 radio(6,7);
 
 void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
-  while (!Serial) {;}
+  /* while (!Serial) {;} */
+  fdevopen( &serial_putc, 0 );
   Ethernet.begin(mac, ip);
   server.begin();
   Serial.print("server is at ");
   Serial.println(Ethernet.localIP());
 
   radio.begin();
+  radio.openWritingPipe(0xdeadbeef);
+  radio.stopListening();
+  radio.printDetails();
 }
 
 void sendReply(EthernetClient& client, const char* reply) {
@@ -42,8 +51,29 @@ struct command_t {
   int16_t value;
 };
 
+uint64_t nameToPipe(const char* name) {
+  if(strcmp("alice", name) == 0)
+    return 0xA11CE;
+
+  if(strcmp("bob", name) == 0)
+    return 0xB0B;
+
+  if(strcmp("eve", name) == 0)
+    return 0xE11E;
+
+  return 0;
+}
+
 void handleCommand(EthernetClient& client, const char* command) {
-  Serial.println(command);
+
+  if(strncmp(command, "OPTIONS /", 9) == 0) {
+    client.println("HTTP/1.1 200 OK");
+    client.println("Content-Type: text/html");
+    client.println("Access-Control-Allow-Origin: *");
+    client.println("Connection: close");
+    client.println();
+    return;
+  }
 
   if(strncmp(command, "POST /", 6) != 0) {
     sendError(client, "Invalid method");
@@ -57,7 +87,9 @@ void handleCommand(EthernetClient& client, const char* command) {
   //Trim - no spaces or slashes allowed
   for(int i = 0; i < 6; ++i) if(name[i] == ' ' || name[i] == '/') name[i] = 0;
 
-  if(strlen(name) < 1) {
+  const uint64_t pipe = nameToPipe(name);
+
+  if(strlen(name) < 1 || pipe == 0) {
     sendError(client, "Invalid name");
     return;
   }
@@ -69,19 +101,14 @@ void handleCommand(EthernetClient& client, const char* command) {
     return;
   }
 
-
-  /* struct {char command; int value;} command_s; */
   struct command_t c;
   c.command = *cmd;
   c.value = atoi(cmd+1);
-  radio.openWritingPipe((uint8_t*)name);
-  radio.write(&c, sizeof(command_t));
   char buf[128];
   memset(buf, 0, 128);
   snprintf(buf, 127, "command: %c%d", c.command, c.value);
-  Serial.print("bot: ");
-  Serial.println(name);
-  Serial.println(buf);
+  radio.openWritingPipe(pipe);
+  radio.write(&c, sizeof(command_t));
 
   sendReply(client, "Command Sent");
 }
