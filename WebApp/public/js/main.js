@@ -10,13 +10,17 @@ Array.prototype.remove = function() {
 };
 
 (function(){
-	var CONTROLLER_URL = 'http://192.168.1.100';
+	var CONTROLLER_IP = '192.168.1.100';
 	var MAX_SPEED = 200;
 	var STEP = 25;
 	var RATE_LIMIT_IN_SEC = 0.5;
 
 	var controls = {};
 	var lastSent;
+
+	$('#controller').val(CONTROLLER_IP).on('change', function(){
+		CONTROLLER_IP = $('#controller').val();
+	});
 
 	function canSend(){
 		var canSend = false;
@@ -31,7 +35,7 @@ Array.prototype.remove = function() {
 	}
 
 	function sendCommand(command, isOn){
-		if(!$('#robotName').val().length){
+		if($('#robotName').val().indexOf('Please') >= 0){
 			$('#robotName').parent().addClass('has-error');
 			return;
 		}
@@ -55,7 +59,7 @@ Array.prototype.remove = function() {
 			}
 			$.ajax({
 			  type: "POST",
-			  url: CONTROLLER_URL + "/" + $('#robotName').val().toLowerCase() + "/" + command + controls[command]
+			  url: "http://" + CONTROLLER_IP + "/" + $('#robotName').val().toLowerCase() + "/" + command + controls[command]
 			});
 		}
 		var RATE_LIMIT_IN_SEC = 0.5;

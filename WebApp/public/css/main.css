@@ -8589,6 +8589,18 @@ footer ul {
 [class^='ion-'] {
   margin-right: 6px;
 }
+#controller {
+  color: #CCCCCC;
+  width: 100px;
+}
+.navbar-right {
+  float: right;
+  display: inline-block;
+}
+.navbar-header {
+  float: left;
+  display: inline-block;
+}
 button {
   height: 23vh;
   font-size: 5em !important;
