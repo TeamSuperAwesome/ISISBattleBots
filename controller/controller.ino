@@ -72,6 +72,7 @@ void handleCommand(EthernetClient& client, const char* command) {
     client.println("Access-Control-Allow-Origin: *");
     client.println("Connection: close");
     client.println();
+    return;
   }
 
   if(strncmp(command, "POST /", 6) != 0) {
