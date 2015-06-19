@@ -17,6 +17,7 @@ Array.prototype.remove = function() {
 
 	var controls = {};
 	var lastSent;
+	var orientationTriggered = false;
 
 	$('#controller').val(CONTROLLER_IP).on('change', function(){
 		CONTROLLER_IP = $('#controller').val();
@@ -35,11 +36,11 @@ Array.prototype.remove = function() {
 	}
 
 	function sendCommand(command, isOn){
-		if($('#robotName').val().indexOf('Please') >= 0){
-			$('#robotName').parent().addClass('has-error');
+		if($(':checked(input[name="robotName"])').length === 0){
+			alert('You need to pick a robot!');
 			return;
 		}
-		$('#robotName').parent().removeClass('has-error');
+
 		if(canSend()){
 			if(!controls[command]) controls[command] = 0;
 			if(isOn){
@@ -59,18 +60,11 @@ Array.prototype.remove = function() {
 			}
 			$.ajax({
 			  type: "POST",
-			  url: "http://" + CONTROLLER_IP + "/" + $('#robotName').val().toLowerCase() + "/" + command + controls[command]
+			  url: "http://" + CONTROLLER_IP + "/" + $(':checked(input[name="robotName"])').val().toLowerCase() + "/" + command + controls[command]
 			});
 		}
 		var RATE_LIMIT_IN_SEC = 0.5;
 	}
-
-	// Clear any error state
-	$('#robotName').on('change', function(){
-		if($('#robotName').val().length){
-			$('#robotName').parent().removeClass('has-error');
-		}
-	});
 
 	// Events
 	$(document).on('battlebot:forward', function(event){
@@ -163,6 +157,10 @@ Array.prototype.remove = function() {
 
 	// Use gyro as a control
 	window.ondevicemotion = function(event) {
+		if(!orientationTriggered){
+			orientationTriggered = true;
+			return;
+		}
 		var accelerationX, accelerationY;
 		if(window.innerHeight > window.innerWidth){
 			accelerationX = event.accelerationIncludingGravity.x;
