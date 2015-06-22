@@ -60,6 +60,7 @@ Array.prototype.remove = function() {
 			}
 			$.ajax({
 			  type: "POST",
+			  timeout: 500,
 			  url: "http://" + CONTROLLER_IP + "/" + $(':checked(input[name="robotName"])').val().toLowerCase() + "/" + command + controls[command]
 			});
 		}
