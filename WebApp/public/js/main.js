@@ -92,29 +92,34 @@ Array.prototype.remove = function() {
   			//forward
   			$('#btnForward').addClass('focus');
   			$.event.trigger({type:'battlebot:forward'});
+  			event.preventDefault();
   			break;
   		case 37:
   		case 65:
   			//left
   			$('#btnLeft').addClass('focus');
   			$.event.trigger({type:'battlebot:left'});
+  			event.preventDefault();
   			break;
   		case 39:
   		case 68:
   			//right
   			$('#btnRight').addClass('focus');
   			$.event.trigger({type:'battlebot:right'});
+  			event.preventDefault();
   			break;
 		case 40:
 		case 83:
   			//back
   			$('#btnReverse').addClass('focus');
   			$.event.trigger({type:'battlebot:reverse'});
+  			event.preventDefault();
   			break;
 		case 32:
   			//stop
   			$('#btnStop').addClass('focus');
   			$.event.trigger({type:'battlebot:stop'});
+  			event.preventDefault();
   			break;
 		default:
 			break;
