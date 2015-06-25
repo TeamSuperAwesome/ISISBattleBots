@@ -8595,6 +8595,10 @@ footer ul {
 .navbar-right {
   float: right;
   display: inline-block;
+  margin: 0;
+}
+.navbar-right span {
+  color: #000;
 }
 .navbar-header {
   float: left;

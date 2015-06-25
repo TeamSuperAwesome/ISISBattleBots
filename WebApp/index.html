@@ -7,6 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="csrf-token">
 	<title>ISIS Battle Bots</title>
+	<link rel="stylesheet" href="public/css/vendor/bootstrap-switch.min.css" />
 	<link rel="stylesheet" href="public/css/main.css" />
 </head>
 <body>
@@ -17,9 +18,12 @@
 					<i class="fa fa-cube"></i>ISIS Battle Bots
 				</a>
 			</div>
-			<p class="navbar-text navbar-right">
+			<div class="navbar-text navbar-right">
+				<div class="visible-xs-block">
+					<input type="checkbox" id="gyroSwitch" />
+				</div>
 				<input type="text" id="controller" />
-			</p>
+			</div>
 		</div>
 	</div>
 	<div class="container">
@@ -69,6 +73,7 @@
 	<script src="public/js/lib/jquery-2.1.3.min.js"></script>
 	<script src="public/js/lib/bootstrap.min.js"></script>
 	<script src="public/js/lib/moment.js"></script>
+	<script src="public/js/lib/bootstrap-switch.min.js"></script>
 	<script src="public/js/main.js"></script>
 </body>
 </html>

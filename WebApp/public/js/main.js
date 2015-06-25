@@ -19,6 +19,8 @@ Array.prototype.remove = function() {
 	var lastSent;
 	var orientationTriggered = false;
 
+	$("#gyroSwitch").bootstrapSwitch({size:'mini'});
+
 	$('#controller').val(CONTROLLER_IP).on('change', function(){
 		CONTROLLER_IP = $('#controller').val();
 	});
@@ -163,28 +165,30 @@ Array.prototype.remove = function() {
 
 	// Use gyro as a control
 	window.ondevicemotion = function(event) {
-		if(!orientationTriggered){
-			orientationTriggered = true;
-			return;
-		}
-		var accelerationX, accelerationY;
-		if(window.innerHeight > window.innerWidth){
-			accelerationX = event.accelerationIncludingGravity.x;
-			accelerationY = event.accelerationIncludingGravity.y;
-		}else{
-			accelerationX = -event.accelerationIncludingGravity.y;
-			accelerationY = event.accelerationIncludingGravity.x;
-		}
+		if($("#gyroSwitch").bootstrapSwitch('state')){
+			if(!orientationTriggered){
+				orientationTriggered = true;
+				return;
+			}
+			var accelerationX, accelerationY;
+			if(window.innerHeight > window.innerWidth){
+				accelerationX = event.accelerationIncludingGravity.x;
+				accelerationY = event.accelerationIncludingGravity.y;
+			}else{
+				accelerationX = -event.accelerationIncludingGravity.y;
+				accelerationY = event.accelerationIncludingGravity.x;
+			}
 
-		if(accelerationY > 6){
-			$.event.trigger({type:'battlebot:reverse'});
-		}else if(accelerationY < 6){
-			$.event.trigger({type:'battlebot:forward'});
-		}
-		if(accelerationX > 1.5){
-			$.event.trigger({type:'battlebot:left'});
-		}else if(accelerationX < -1.5){
-			$.event.trigger({type:'battlebot:right'});
+			if(accelerationY > 6){
+				$.event.trigger({type:'battlebot:reverse'});
+			}else if(accelerationY < 6){
+				$.event.trigger({type:'battlebot:forward'});
+			}
+			if(accelerationX > 1.5){
+				$.event.trigger({type:'battlebot:left'});
+			}else if(accelerationX < -1.5){
+				$.event.trigger({type:'battlebot:right'});
+			}
 		}
 	}
 
