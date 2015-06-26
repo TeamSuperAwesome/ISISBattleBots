@@ -2,9 +2,14 @@
 #include <Ethernet.h>
 #include <RF24.h>
 #include <string.h>
+#include <ArduinoButton.h>
+#include <UniversalInputManager.h>
 
 // Comment out for quickness
 #define SERIAL_DEBUG
+
+ArduinoButton killswitchButton(0, 3);
+UniversalInputManager inputs;
 
 #ifdef SERIAL_DEBUG
 int serial_putc(char c, FILE*) {
@@ -24,6 +29,9 @@ void setup() {
   Serial.begin(9600);
   fdevopen(&serial_putc, 0);
 #endif
+
+  inputs.addDevice(&killswitchButton);
+  inputs.setCallback(buttonHandler);
 
   Ethernet.begin(mac, ip);
   server.begin();
@@ -63,11 +71,8 @@ struct command_t {
 
 uint64_t nameToPipe(const char* name) {
   if (strcmp("alice", name) == 0) return 0xA11CE;
-
   if (strcmp("bob", name) == 0) return 0xB0B;
-
   if (strcmp("eve", name) == 0) return 0xE11E;
-
   return 0;
 }
 
@@ -81,8 +86,13 @@ void handleCommand(EthernetClient& client, const char* command) {
     return;
   }
 
-  if (strncmp(command, "POST /", 6) != 0) {
-    sendError(client, "Invalid method");
+  /* if (strncmp(command, "POST /", 6) != 0) { */
+  /*   sendError(client, "Invalid method"); */
+  /*   return; */
+  /* } */
+
+  if (!killswitchButton.isActive()) {
+    sendError(client, "Disarmed");
     return;
   }
 
@@ -108,16 +118,38 @@ void handleCommand(EthernetClient& client, const char* command) {
     return;
   }
 
+  sendCommand(pipe, *cmd, atoi(cmd + 1));
+  sendReply(client, "Command Sent");
+}
+
+void sendCommand(const uint64_t pipe, char cmd, int16_t value) {
   struct command_t c;
-  c.command = *cmd;
-  c.value = atoi(cmd + 1);
+  c.command = cmd;
+  c.value = value;
   char buf[128];
   memset(buf, 0, 128);
   snprintf(buf, 127, "command: %c%d", c.command, c.value);
   radio.openWritingPipe(pipe);
   radio.write(&c, sizeof(command_t));
+}
 
-  sendReply(client, "Command Sent");
+void buttonHandler(inputtype_t type, IInputDevice * device)
+{
+  if (device == &killswitchButton) {
+    IButton * button = (IButton *) device;
+    bool armed = button->isActive();
+#ifdef SERIAL_DEBUG
+    Serial.print("Armed: ");
+    Serial.println(armed);
+#endif
+
+    // Kill all the bots!
+    if (!armed) {
+      sendCommand(nameToPipe("alice"), 'S', 0);
+      sendCommand(nameToPipe("bob"), 'S', 0);
+      sendCommand(nameToPipe("eve"), 'S', 0);
+    }
+  }
 }
 
 void loop() {
@@ -145,4 +177,6 @@ void loop() {
     delay(1);
     client.stop();
   }
+
+  inputs.poll();
 }
