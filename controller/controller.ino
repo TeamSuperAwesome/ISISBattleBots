@@ -3,31 +3,41 @@
 #include <RF24.h>
 #include <string.h>
 
+// Comment out for quickness
+#define SERIAL_DEBUG
+
+#ifdef SERIAL_DEBUG
 int serial_putc(char c, FILE*) {
   Serial.write(c);
   return c;
 }
+#endif
 
 byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-IPAddress ip(192, 168, 1, 100);
+IPAddress ip(192, 168, 1, 150);
 EthernetServer server(80);
 
-RF24 radio(6,7);
+RF24 radio(6, 7);
 
 void setup() {
-  // Open serial communications and wait for port to open:
+#ifdef SERIAL_DEBUG
   Serial.begin(9600);
-  /* while (!Serial) {;} */
-  fdevopen( &serial_putc, 0 );
+  fdevopen(&serial_putc, 0);
+#endif
+
   Ethernet.begin(mac, ip);
   server.begin();
-  Serial.print("server is at ");
+
+#ifdef SERIAL_DEBUG
+  Serial.print("Server is at ");
   Serial.println(Ethernet.localIP());
+#endif
 
   radio.begin();
-  radio.openWritingPipe(0xdeadbeef);
-  radio.stopListening();
+
+#ifdef SERIAL_DEBUG
   radio.printDetails();
+#endif
 }
 
 void sendReply(EthernetClient& client, const char* reply) {
@@ -52,21 +62,17 @@ struct command_t {
 };
 
 uint64_t nameToPipe(const char* name) {
-  if(strcmp("alice", name) == 0)
-    return 0xA11CE;
+  if (strcmp("alice", name) == 0) return 0xA11CE;
 
-  if(strcmp("bob", name) == 0)
-    return 0xB0B;
+  if (strcmp("bob", name) == 0) return 0xB0B;
 
-  if(strcmp("eve", name) == 0)
-    return 0xE11E;
+  if (strcmp("eve", name) == 0) return 0xE11E;
 
   return 0;
 }
 
 void handleCommand(EthernetClient& client, const char* command) {
-
-  if(strncmp(command, "OPTIONS /", 9) == 0) {
+  if (strncmp(command, "OPTIONS /", 9) == 0) {
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: text/html");
     client.println("Access-Control-Allow-Origin: *");
@@ -75,7 +81,7 @@ void handleCommand(EthernetClient& client, const char* command) {
     return;
   }
 
-  if(strncmp(command, "POST /", 6) != 0) {
+  if (strncmp(command, "POST /", 6) != 0) {
     sendError(client, "Invalid method");
     return;
   }
@@ -84,26 +90,27 @@ void handleCommand(EthernetClient& client, const char* command) {
   memset(name, 0, 6);
   strncpy(name, command + 6, 5);
 
-  //Trim - no spaces or slashes allowed
-  for(int i = 0; i < 6; ++i) if(name[i] == ' ' || name[i] == '/') name[i] = 0;
+  // Trim - no spaces or slashes allowed
+  for (int i = 0; i < 6; ++i)
+    if (name[i] == ' ' || name[i] == '/') name[i] = 0;
 
   const uint64_t pipe = nameToPipe(name);
 
-  if(strlen(name) < 1 || pipe == 0) {
+  if (strlen(name) < 1 || pipe == 0) {
     sendError(client, "Invalid name");
     return;
   }
 
-  //Now find the command portion
-  const char* cmd = strchr(command+6, '/') + 1;
-  if(cmd == (const char*)1) {
+  // Now find the command portion
+  const char* cmd = strchr(command + 6, '/') + 1;
+  if (cmd == (const char*)1) {
     sendError(client, "Malformed request");
     return;
   }
 
   struct command_t c;
   c.command = *cmd;
-  c.value = atoi(cmd+1);
+  c.value = atoi(cmd + 1);
   char buf[128];
   memset(buf, 0, 128);
   snprintf(buf, 127, "command: %c%d", c.command, c.value);
@@ -123,13 +130,12 @@ void loop() {
         char buf[buf_size];
         int line_length = 0;
         memset(buf, 0, buf_size);
-        for(int i = 0; i < buf_size-1; ++i) {
+        for (int i = 0; i < buf_size - 1; ++i) {
           char c = client.read();
           buf[i] = c;
           line_length = (c == '\n') ? 0 : line_length + 1;
 
-          if(line_length == 0)
-            break;
+          if (line_length == 0) break;
         }
         handleCommand(client, &buf[0]);
         break;
