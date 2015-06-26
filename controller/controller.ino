@@ -7,6 +7,7 @@
 
 // Comment out for quickness
 #define SERIAL_DEBUG
+/* #define SERIAL_DEBUG_REQUEST */
 
 ArduinoButton killswitchButton(0, 3);
 UniversalInputManager inputs;
@@ -156,8 +157,15 @@ void loop() {
   // listen for incoming clients
   EthernetClient client = server.available();
   if (client) {
+#ifdef SERIAL_DEBUG_REQUEST
+    Serial.println("Got client");
+#endif
     while (client.connected()) {
       if (client.available()) {
+#ifdef SERIAL_DEBUG_REQUEST
+        Serial.print(millis());
+        Serial.println(": Client request");
+#endif
         const int buf_size = 256;
         char buf[buf_size];
         int line_length = 0;
