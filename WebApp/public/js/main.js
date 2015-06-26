@@ -19,8 +19,6 @@ Array.prototype.remove = function() {
 	var lastSent;
 	var orientationTriggered = false;
 
-	$("#gyroSwitch").bootstrapSwitch({size:'mini'});
-
 	$('#controller').val(CONTROLLER_IP).on('change', function(){
 		CONTROLLER_IP = $('#controller').val();
 	});
@@ -165,7 +163,7 @@ Array.prototype.remove = function() {
 
 	// Use gyro as a control
 	window.ondevicemotion = function(event) {
-		if($("#gyroSwitch").bootstrapSwitch('state')){
+		if($(":checked(#gyroSwitch)").length){
 			if(!orientationTriggered){
 				orientationTriggered = true;
 				return;
@@ -191,6 +189,4 @@ Array.prototype.remove = function() {
 			}
 		}
 	}
-
-
 }());
