@@ -3,7 +3,7 @@ Battle Bots (Sumo Bots) made as part of the Harwell Open Day
 
 Arduino requirements:
 - [RF24](https://github.com/maniacbug/RF24)
-- [ArduinoUniversalInouts](https://github.com/DanNixon/ArduinoUniversalInput) (controller only)
+- [ArduinoUniversalInputs](https://github.com/DanNixon/ArduinoUniversalInput) (controller only)
 
 WebApp controller available at: http://teamsuperawesome.github.io/ISISBattleBots/WebApp/
 
