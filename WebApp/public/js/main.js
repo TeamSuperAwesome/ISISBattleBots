@@ -12,14 +12,12 @@ Array.prototype.remove = function() {
 (function(){
 	var CONTROLLER_IP = '192.168.1.100';
 	var MAX_SPEED = 200;
-	var STEP = 25;
+	var STEP = 30;
 	var RATE_LIMIT_IN_SEC = 0.5;
 
 	var controls = {};
 	var lastSent;
 	var orientationTriggered = false;
-
-	$("#gyroSwitch").bootstrapSwitch({size:'mini'});
 
 	$('#controller').val(CONTROLLER_IP).on('change', function(){
 		CONTROLLER_IP = $('#controller').val();
@@ -44,20 +42,24 @@ Array.prototype.remove = function() {
 		}
 
 		if(canSend()){
+			var step = STEP;
+			if(command === 'T'){
+				step = step / 2;
+			}
 			if(!controls[command]) controls[command] = 0;
 			if(isOn){
 				if(controls[command] < 0){
 					controls[command] = 0;
 				}
-				if(controls[command] <= (MAX_SPEED - STEP)){
-					controls[command] += STEP;
+				if(controls[command] <= (MAX_SPEED - step)){
+					controls[command] += step;
 				}
 			}else{
 				if(controls[command] > 0){
 					controls[command] = 0;
 				}
-				if(controls[command] >= (-MAX_SPEED + STEP)){
-					controls[command] -= STEP;
+				if(controls[command] >= (-MAX_SPEED + step)){
+					controls[command] -= step;
 				}
 			}
 			$.ajax({
@@ -165,7 +167,7 @@ Array.prototype.remove = function() {
 
 	// Use gyro as a control
 	window.ondevicemotion = function(event) {
-		if($("#gyroSwitch").bootstrapSwitch('state')){
+		if($(":checked(#gyroSwitch)").length){
 			if(!orientationTriggered){
 				orientationTriggered = true;
 				return;
@@ -191,6 +193,4 @@ Array.prototype.remove = function() {
 			}
 		}
 	}
-
-
 }());
