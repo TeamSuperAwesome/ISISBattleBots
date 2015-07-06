@@ -31,7 +31,7 @@ struct RFPacket
 // Uncomment for each robot
 /* uint64_t g_RFAddress = 0xA11CE; //Alice */
 /* uint64_t g_RFAddress = 0xB0B; //Bob */
-/* uint64_t g_RFAddress = 0xE11E; //Eve */
+uint64_t g_RFAddress = 0xE11E; //Eve
 
 
 void setup()
