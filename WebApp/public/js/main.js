@@ -89,77 +89,77 @@ Array.prototype.remove = function() {
 	});
 
 	// Keyboard listeners
-  $(document).keydown(function(event) {
-  	switch(event.which){
-  		case 38:
-  		case 87:
-  			//forward
-  			$('#btnForward').addClass('focus');
-  			$.event.trigger({type:'battlebot:forward'});
-  			event.preventDefault();
-  			break;
-  		case 37:
-  		case 65:
-  			//left
-  			$('#btnLeft').addClass('focus');
-  			$.event.trigger({type:'battlebot:left'});
-  			event.preventDefault();
-  			break;
-  		case 39:
-  		case 68:
-  			//right
-  			$('#btnRight').addClass('focus');
-  			$.event.trigger({type:'battlebot:right'});
-  			event.preventDefault();
-  			break;
-		case 40:
-		case 83:
-  			//back
-  			$('#btnReverse').addClass('focus');
-  			$.event.trigger({type:'battlebot:reverse'});
-  			event.preventDefault();
-  			break;
-		case 32:
-  			//stop
-  			$('#btnStop').addClass('focus');
-  			$.event.trigger({type:'battlebot:stop'});
-  			event.preventDefault();
-  			break;
-		default:
-			break;
-  	}
+    $(document).keydown(function(event) {
+      	switch(event.which){
+      		case 38:
+      		case 87:
+      			//forward
+      			$('#btnForward').addClass('focus');
+      			$.event.trigger({type:'battlebot:forward'});
+      			event.preventDefault();
+      			break;
+      		case 37:
+      		case 65:
+      			//left
+      			$('#btnLeft').addClass('focus');
+      			$.event.trigger({type:'battlebot:left'});
+      			event.preventDefault();
+      			break;
+      		case 39:
+      		case 68:
+      			//right
+      			$('#btnRight').addClass('focus');
+      			$.event.trigger({type:'battlebot:right'});
+      			event.preventDefault();
+      			break;
+    		case 40:
+    		case 83:
+      			//back
+      			$('#btnReverse').addClass('focus');
+      			$.event.trigger({type:'battlebot:reverse'});
+      			event.preventDefault();
+      			break;
+    		case 32:
+      			//stop
+      			$('#btnStop').addClass('focus');
+      			$.event.trigger({type:'battlebot:stop'});
+      			event.preventDefault();
+      			break;
+    		default:
+    			break;
+      	}
 	});
 	$(document).keyup(function(event){
 		switch(event.which){
 			case 38:
 			case 87:
 				//forward
-  			$('#btnForward').removeClass('focus');
-  			$.event.trigger({type:'battlebot:forward', prefix:'-'});
-  			break;
-  		case 37:
-  		case 65:
-  			//left
-  			$('#btnLeft').removeClass('focus');
-  			$.event.trigger({type:'battlebot:left', prefix:'-'});
-  			break;
-  		case 39:
-  		case 68:
-  			//right
-  			$('#btnRight').removeClass('focus');
-  			$.event.trigger({type:'battlebot:right', prefix:'-'});
-  			break;
+      			$('#btnForward').removeClass('focus');
+      			$.event.trigger({type:'battlebot:forward', prefix:'-'});
+      			break;
+      		case 37:
+      		case 65:
+      			//left
+      			$('#btnLeft').removeClass('focus');
+      			$.event.trigger({type:'battlebot:left', prefix:'-'});
+      			break;
+      		case 39:
+      		case 68:
+      			//right
+      			$('#btnRight').removeClass('focus');
+      			$.event.trigger({type:'battlebot:right', prefix:'-'});
+      			break;
 			case 40:
 			case 83:
-  			//back
-  			$('#btnReverse').removeClass('focus');
-  			$.event.trigger({type:'battlebot:reverse', prefix:'-'});
-  			break;
+      			//back
+      			$('#btnReverse').removeClass('focus');
+      			$.event.trigger({type:'battlebot:reverse', prefix:'-'});
+      			break;
 			case 32:
-  			//stop
-  			$('#btnStop').removeClass('focus');
-  			$.event.trigger({type:'battlebot:stop', prefix:'-'});
-  			break;
+      			//stop
+      			$('#btnStop').removeClass('focus');
+      			$.event.trigger({type:'battlebot:stop', prefix:'-'});
+      			break;
 			default:
 				break;
 	  	}
@@ -193,4 +193,28 @@ Array.prototype.remove = function() {
 			}
 		}
 	}
+
+    // Stop the bot when triggering gyro
+    $('#gyroSwitch').on('click', function(){
+        if($(':checked(input[name="robotName"])').length){
+            $.event.trigger({type:'battlebot:stop', prefix:'-'});            
+        }
+        if($(":checked(#gyroSwitch)").length){
+            if (document.body.requestFullscreen) {
+                document.body.requestFullscreen();
+            } else if (document.body.msRequestFullscreen) {
+                document.body.msRequestFullscreen();
+            } else if (document.body.mozRequestFullScreen) {
+                document.body.mozRequestFullScreen();
+            } else if (document.body.webkitRequestFullscreen) {
+                document.body.webkitRequestFullscreen();
+            }
+
+            screen.orientation.lock("landscape")
+                .then(
+                    function(){container.innerHTML = 'success';},
+                    function(){container.innerHTML = 'failure\n' + arguments[0];}
+                );
+        }
+    });
 }());

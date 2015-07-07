@@ -8597,7 +8597,7 @@ footer ul {
   display: inline-block;
   margin: 0;
 }
-.navbar-right span {
+.navbar-right span, .navbar-right label {
   color: #000;
 }
 .navbar-header {
