@@ -10,7 +10,7 @@ Array.prototype.remove = function() {
 };
 
 (function(){
-	var CONTROLLER_IP = '192.168.1.100';
+	var CONTROLLER_IP = '192.168.0.150';
 	var MAX_SPEED = 200;
 	var STEP = 25;
 	var RATE_LIMIT_IN_SEC = 0.5;
